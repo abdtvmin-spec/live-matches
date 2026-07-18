@@ -1,7 +1,6 @@
 const axios = require('axios');
 const admin = require('firebase-admin');
 
-// تأكد من وجود ملف accountKey.json في نفس المجلد
 const serviceAccount = require('./accountKey.json');
 
 admin.initializeApp({
@@ -19,7 +18,7 @@ async function updateLiveMatches() {
     const matches = response.data;
 
     if (!Array.isArray(matches)) {
-      console.log("البيانات المستلمة ليست قائمة مباريات.");
+      console.log("لا توجد مباريات أو خطأ في البيانات");
       return;
     }
 
@@ -45,41 +44,12 @@ async function updateLiveMatches() {
     });
 
     await ref.update(updates);
-    console.log("تم التحديث بنجاح");
+    console.log("تم التحديث بنجاح!");
   } catch (err) {
-    console.error("خطأ في التحديث:", err.message);
+    console.error("خطأ:", err.message);
   }
 }
 
-// تنفيذ دوري كل دقيقة
+// تشغيل التحديث كل دقيقة
 setInterval(updateLiveMatches, 60000);
-updateLiveMatches();
-        m31k_tx: item.match_live || "LIVE",
-        kna_tx: "beIN Sports",
-        logo1: item.team_home_badge || "",
-        logo2: item.team_away_badge || "",
-        logo_d: item.league_logo || ""
-      };
-    });
-
-    await ref.update(updates);
-    console.log(`تم تحديث ${matches.length} مباراة بنجاح تلقائياً!`);
-  } catch (error) {
-    console.error("حدث خطأ أثناء التحديث:", error);
-  }
-}
-
-// التحديث المستمر كل 60 ثانية
-setInterval(updateLiveMatches, 60000);
-
-// تشغيل فوري بمجرد إقلاع السيرفر
-updateLiveMatches();
-    console.error("حدث خطأ أثناء التحديث:", error);
-  }
-}
-
-// التحديث المستمر كل 60 ثانية
-setInterval(updateLiveMatches, 60000);
-
-// تشغيل فوري بمجرد إقلاع السيرفر
 updateLiveMatches();
