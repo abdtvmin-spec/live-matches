@@ -1,1 +1,56 @@
-const axios = require(&#39;axios&#39;);<br/>const admin = require(&#39;firebase-admin&#39;);<br/><br/>// استدعاء ملف الأمان الخاص بك<br/>const serviceAccount = require(&quot;./accountKey.json&quot;); <br/><br/>admin.initializeApp({<br/>  credential: admin.credential.cert(serviceAccount),<br/>  databaseURL: &quot;https://min-f7cac-default-rtdb.firebaseio.com/&quot; <br/>});<br/><br/>const db = admin.database();<br/>const ref = db.ref(&quot;db_matches&quot;); <br/><br/>async function updateLiveMatches() {<br/>  try {<br/>    // جلب البيانات الحية من حسابك في apifootball<br/>    const response = await axios.get(&#39;https://apifootball.com/api/?action=get_live_pro&amp;APIkey=e050b2bb9abf8333928b6d0013b21b1db3886506ec2a&#39;);<br/>    const matches = response.data;<br/><br/>    if (!matches || matches.error || matches.length === 0) {<br/>      console.log(&quot;لا توجد مباريات جارية حالياً.&quot;);<br/>      return;<br/>    }<br/><br/>    let updates = {};<br/>    matches.forEach(item =&gt; {<br/>      const matchId = &quot;match_&quot; + item.match_id;<br/>      updates[matchId] = {<br/>        key: matchId,<br/>        dwr: item.league_name,          <br/>        tim: item.match_time + &quot;&#39;&quot;,     <br/>        tea1: item.match_hometeam_name, <br/>        tea2: item.match_awayteam_name, <br/>        teas1: item.match_hometeam_score || &quot;0&quot;, <br/>        teas2: item.match_awayteam_score || &quot;0&quot;, <br/>        m3lk_tx: item.match_live || &quot;LIVE&quot;,       <br/>        kna_tx: &quot;beIN Sports&quot;,<br/>        logo1: item.team_home_badge || &quot;&quot;, <br/>        logo2: item.team_away_badge || &quot;&quot;, <br/>        logo_dwr: item.league_logo || &quot;&quot;   <br/>      };<br/>    });<br/><br/>    await ref.update(updates);<br/>    console.log(`تم تحديث ${matches.length} مباراة بنجاح تلقائياً!`);<br/>  } catch (error) {<br/>    console.error(&quot;حدث خطأ أثناء التحديث:&quot;, error);<br/>  }<br/>}<br/><br/>// التحديث المستمر كل 60 ثانية<br/>setInterval(updateLiveMatches, 60000);<br/>// تشغيل فوري بمجرد إقلاع السيرفر<br/>updateLiveMatches(); 
+const axios = require('axios');
+const admin = require('firebase-admin');
+
+// استدعاء ملف الأمان الخاص بك
+const serviceAccount = require("./accountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://min-f7cac-default-rtdb.firebaseio.com/"
+});
+
+const db = admin.database();
+const ref = db.ref("db_matches");
+
+async function updateLiveMatches() {
+  try {
+    // جلب البيانات الحية من حسابك في apifootball
+    const response = await axios.get('https://apifootball.com/api/?action=get_live_pro&APIkey=e050b2bb9abf8333928b6d0013b21b1db3886506ec2a');
+    const matches = response.data;
+
+    if (!matches || matches.error || matches.length === 0) {
+      console.log("لا توجد مباريات جارية حالياً.");
+      return;
+    }
+
+    let updates = {};
+    matches.forEach(item => {
+      const matchId = "match_" + item.match_id;
+      updates[matchId] = {
+        key: matchId,
+        dwr: item.league_name,
+        tim: item.match_time + "'",
+        tea1: item.match_hometeam_name,
+        tea2: item.match_awayteam_name,
+        teas1: item.match_hometeam_score || "0",
+        teas2: item.match_awayteam_score || "0",
+        m31k_tx: item.match_live || "LIVE",
+        kna_tx: "beIN Sports",
+        logo1: item.team_home_badge || "",
+        logo2: item.team_away_badge || "",
+        logo_d: item.league_logo || ""
+      };
+    });
+
+    await ref.update(updates);
+    console.log(`تم تحديث ${matches.length} مباراة بنجاح تلقائياً!`);
+  } catch (error) {
+    console.error("حدث خطأ أثناء التحديث:", error);
+  }
+}
+
+// التحديث المستمر كل 60 ثانية
+setInterval(updateLiveMatches, 60000);
+
+// تشغيل فوري بمجرد إقلاع السيرفر
+updateLiveMatches();
