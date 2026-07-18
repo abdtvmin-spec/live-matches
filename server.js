@@ -14,12 +14,12 @@ const ref = db.ref("db_matches");
 
 async function updateLiveMatches() {
   try {
-    // جلب البيانات الحية من حسابك في apifootball
-    const response = await axios.get('https://apifootball.com/api/?action=get_live_pro&APIkey=e050b2bb9abf8333928b6d0013b21b1db3886506ec2a');
+    // جلب البيانات الحية من حسابك في apifootball مع إغلاق النص والدالة بشكل صحيح
+    const response = await axios.get('https://apifootball.com/api/?action=get_live_pro&APIkey=e050b2bb9abf8333928b6d0013b21b1db3886506ec2aa03710834d4ae4e84bd1');
     const matches = response.data;
 
-    if (!matches || matches.error || matches.length === 0) {
-      console.log("لا توجد مباريات جارية حالياً.");
+    if (!matches || matches.error || Array.isArray(matches) === false || matches.length === 0) {
+      console.log("لا توجد مباريات جارية حالياً أو خطأ في الـ API.");
       return;
     }
 
@@ -45,6 +45,15 @@ async function updateLiveMatches() {
     await ref.update(updates);
     console.log(`تم تحديث ${matches.length} مباراة بنجاح تلقائياً!`);
   } catch (error) {
+    console.error("حدث خطأ أثناء التحديث:", error);
+  }
+}
+
+// التحديث المستمر كل 60 ثانية
+setInterval(updateLiveMatches, 60000);
+
+// تشغيل فوري بمجرد إقلاع السيرفر
+updateLiveMatches();
     console.error("حدث خطأ أثناء التحديث:", error);
   }
 }
