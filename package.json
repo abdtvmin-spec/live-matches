@@ -1,1 +1,13 @@
-{<br/>  &quot;name&quot;: &quot;live-matches-server&quot;,<br/>  &quot;version&quot;: &quot;1.0.0&quot;,<br/>  &quot;main&quot;: &quot;server.js&quot;,<br/>  &quot;dependencies&quot;: {<br/>    &quot;axios&quot;: &quot;^1.6.0&quot;,<br/>    &quot;firebase-admin&quot;: &quot;^12.0.0&quot;<br/>  }<br/>}
+{
+  "name": "live-matches-server",
+  "version": "1.0.0",
+  "description": "Live football matches fetcher to Firebase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "firebase-admin": "^11.0.0"
+  }
+}
